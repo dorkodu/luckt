@@ -14,17 +14,17 @@ export const Luckt = {
  */
 function createStore(properties) {
   return {
-    commit: function(action) {
+    commit: function (action) {
 
     },
     follow: function (callback) {
-      
+
     },
     state: function () {
-      
+
     },
     get: function (name) {
-      
+
     },
   };
 }
@@ -33,9 +33,7 @@ function createStore(properties) {
  * TODO: MAKE THIS SIMPLE REDUX CLONE, SOMETHING REASONABLE
  * A simplified clone of Redux : createStore
  *  - Create a store with methods :
- *    1- getState: returns the current state
- *    2- subscribe: add a listener
- *    3- unsubscribe: remove a listener
+ *    1- getState: returns the current state>
  *    4- dispatch: takes an action and updates the state
  */
 
