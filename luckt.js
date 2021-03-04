@@ -14,6 +14,17 @@ export const Luckt = {
  */
 function createStore(properties) {
   return {
-    // this will be the store object
+    commit: function(action) {
+
+    },
+    follow: function (callback) {
+      
+    },
+    state: function () {
+      
+    },
+    get: function (name) {
+      
+    },
   };
 }
