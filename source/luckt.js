@@ -45,7 +45,7 @@ function createStore(properties) {
   }
 
   function watch(watcher, options) {
-    
+
   }  
 
   function get(name) {
@@ -58,6 +58,13 @@ function createStore(properties) {
      * I am pretty unexperienced in JS, but just hope this works.
      */
     return Object.assign({}, _state);
+  }
+
+  function _withCommit (fn) {
+    const committing = _committing
+    _committing = true
+    fn()
+    _committing = committing
   }
 
   return {
