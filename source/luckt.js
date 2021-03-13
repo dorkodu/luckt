@@ -60,6 +60,21 @@ function createStore(properties) {
     return Object.assign({}, _state);
   }
 
+  function genericSubscribe (fn, subs, options) {
+    if (subs.indexOf(fn) < 0) {
+      options && options.prepend
+        ? subs.unshift(fn)
+        : subs.push(fn)
+    }
+  
+    return function() {
+      const i = subs.indexOf(fn)
+      if (i > -1) {
+        subs.splice(i, 1)
+      }
+    }
+  }
+
   function replaceState(newState) {
     _withCommit(function() {
       _state = newState
