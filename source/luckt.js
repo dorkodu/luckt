@@ -45,6 +45,7 @@ function createStore(properties) {
   }
 
   function watch(watcher, options) {
+    
   }  
 
   function get(name) {
@@ -88,17 +89,4 @@ function isFunction (val) {
  */
 function forEachAttribute (obj, fn) {
   Object.keys(obj).forEach(key => fn(obj[key], key))
-}
-
-function unifyActionObjectStyle (type, payload) {
-  if (isObject(type) && type.type) {
-    payload = type
-    type = type.type
-  }
-
-  if (__DEV__) {
-    premise(typeof type === 'string', `expects string as the type, but found ${typeof type}.`)
-  }
-
-  return { type: type, payload: payload }
 }
