@@ -56,11 +56,7 @@ function createStore(properties) {
   }
 
   function state() {
-    /**
-     * Will return the "momentary clone" of state, to make sure you can't mutate it directly.
-     * I am pretty unexperienced in JS, but just hope this works.
-     */
-    return Object.assign({}, _state);
+    return _state;
   }
 
   function genericSubscribe(fn, subs, options) {
