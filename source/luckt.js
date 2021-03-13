@@ -60,6 +60,12 @@ function createStore(properties) {
     return Object.assign({}, _state);
   }
 
+  function replaceState(newState) {
+    _withCommit(function() {
+      _state = newState
+    })
+  }
+
   function _withCommit (fn) {
     const committing = _committing
     _committing = true
