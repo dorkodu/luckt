@@ -15,11 +15,11 @@ export const Luckt = {
 function createStore(properties) {
 
   let _committing = false;
-  
+
   // assigning the initial state, if given
-  let _state = properties.state && isObject(properties.state)
-              ? properties.state
-              : {}
+  let _state = properties.state && isObject(properties.state) ?
+    properties.state :
+    {}
 
   let _watchers = [];
   let _getters = properties.getters;
@@ -31,26 +31,28 @@ function createStore(properties) {
 
     // notice the watchers
     _watchers
-    .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
-    .forEach(function (watcher) {
-      if(isFunction(watcher))
-        watcher(action, _state);
-    });
+      .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
+      .forEach(function (watcher) {
+        if (isFunction(watcher))
+          watcher(action, _state);
+      });
 
     /**
      * commiting always returns the action
      * this is really important for middleware's
-     */ 
+     */
     return action;
   }
 
   function watch(watcher, options) {
     return genericSubscribe(watcher, _watchers, options)
-  }  
+  }
 
   function get(name) {
-    if(typeof name === "string") {
-      return _getters[name](_state)
+    if (typeof name === "string") {
+      const getter = _getters[name];
+      if (isFunction(getter))
+        return getter(_state);
     }
   }
 
@@ -62,14 +64,14 @@ function createStore(properties) {
     return Object.assign({}, _state);
   }
 
-  function genericSubscribe (fn, subs, options) {
+  function genericSubscribe(fn, subs, options) {
     if (subs.indexOf(fn) < 0) {
-      options && options.prepend
-        ? subs.unshift(fn)
-        : subs.push(fn)
+      options && options.prepend ?
+        subs.unshift(fn) :
+        subs.push(fn)
     }
-  
-    return function() {
+
+    return function () {
       const i = subs.indexOf(fn)
       if (i > -1) {
         subs.splice(i, 1)
@@ -78,12 +80,12 @@ function createStore(properties) {
   }
 
   function replaceState(newState) {
-    _withCommit(function() {
+    _withCommit(function () {
       _state = newState
     })
   }
 
-  function _withCommit (fn) {
+  function _withCommit(fn) {
     const committing = _committing
     _committing = true
     fn()
@@ -109,21 +111,21 @@ function premise(condition, explanation) {
   if (!condition) console.error(`[luckt] ${explanation}`)
 }
 
-function isPromise (val) {
+function isPromise(val) {
   return val && typeof val.then === 'function'
 }
 
-function isObject (obj) {
+function isObject(obj) {
   return obj !== null && typeof obj === 'object'
 }
 
-function isFunction (val) {
+function isFunction(val) {
   return obj !== null && typeof obj === 'function'
 }
 
 /**
  * forEach for object type
  */
-function forEachAttribute (obj, fn) {
+function forEachAttribute(obj, fn) {
   Object.keys(obj).forEach(key => fn(obj[key], key))
 }
