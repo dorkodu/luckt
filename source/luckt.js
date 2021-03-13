@@ -45,11 +45,13 @@ function createStore(properties) {
   }
 
   function watch(watcher, options) {
-
+    return genericSubscribe(watcher, _watchers, options)
   }  
 
   function get(name) {
-
+    if(typeof name === "string") {
+      return _getters[name](_state)
+    }
   }
 
   function state() {
@@ -95,6 +97,13 @@ function createStore(properties) {
     get: get
   };
 }
+
+/*
+  TODO: Will have in the future, but not necessary for now
+  function resetStore (store, hot) {
+    store._acts = Object.create(null)
+  }
+*/
 
 function premise(condition, explanation) {
   if (!condition) console.error(`[luckt] ${explanation}`)
