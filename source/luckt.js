@@ -66,3 +66,39 @@ function createStore(properties) {
     get: get
   };
 }
+
+function premise(condition, explanation) {
+  if (!condition) console.error(`[luckt] ${explanation}`)
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isFunction (val) {
+  return obj !== null && typeof obj === 'function'
+}
+
+/**
+ * forEach for object type
+ */
+function forEachAttribute (obj, fn) {
+  Object.keys(obj).forEach(key => fn(obj[key], key))
+}
+
+function unifyActionObjectStyle (type, payload) {
+  if (isObject(type) && type.type) {
+    payload = type
+    type = type.type
+  }
+
+  if (__DEV__) {
+    premise(typeof type === 'string', `expects string as the type, but found ${typeof type}.`)
+  }
+
+  return { type: type, payload: payload }
+}
