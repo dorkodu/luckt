@@ -36,7 +36,6 @@ function createStore(properties) {
         if (isFunction(watcher))
           watcher(action, _state);
       });
-
     /**
      * commiting always returns the action
      * this is really important for middleware's
