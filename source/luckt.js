@@ -17,9 +17,9 @@ function createStore(properties) {
   let _committing = false;
 
   // assigning the initial state, if given
-  let _state = properties.state && isObject(properties.state) ?
-    properties.state :
-    {}
+  let _state = isObject(properties.state) 
+                ? properties.state 
+                : {}
 
   let _watchers = [];
   let _getters = properties.getters;
@@ -96,10 +96,17 @@ function createStore(properties) {
 }
 
 /*
-  TODO: Will have in the future, but not necessary for now
+  TODOS: 
+  
+  - Will have resetStore in the future, but not necessary for now
+  
   function resetStore (store, hot) {
     store._acts = Object.create(null)
   }
+  - registerGetter
+  - registerAct
+  - registerActWatcher
+
 */
 
 function premise(condition, explanation) {
