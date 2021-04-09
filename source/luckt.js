@@ -17,9 +17,8 @@ function createStore(properties) {
   let _committing = false;
 
   // assigning the initial state, if given
-  let _state = isObject(properties.state) 
-                ? properties.state 
-                : {}
+  let _state = isObject(properties.state) ?
+    properties.state : {}
 
   let _watchers = [];
   let _getters = properties.getters;
@@ -122,7 +121,7 @@ function isObject(obj) {
 }
 
 function isFunction(val) {
-  return obj !== null && typeof obj === 'function'
+  return val !== null && typeof val === 'function'
 }
 
 /**
