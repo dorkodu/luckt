@@ -53,5 +53,5 @@ Even if you haven't used any other state manager libraries, Luckt only takes a f
 
 [MIT](LICENSE)
 
-Copyright **(c)** 2021 Dorkodu [dorkodu.com](https://dorkodu.com)
+Copyright **(c)** 2021 Dorkodu
 
