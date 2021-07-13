@@ -16,7 +16,6 @@ As we thought a better approach on application architecture, this will take its 
 
   Acts are functions that takes only
 
-  
 
 ### How?
 
@@ -27,7 +26,7 @@ As we thought a better approach on application architecture, this will take its 
 - When you want to manipulate the state, use **commit** by giving it a single action object which MUST has "act" property. You can add more information in it, and use as you wish.
 
 ```js
-const store = Luckt.createStore({
+const store = Luckt.store({
   state: {
     count: 1
   },
@@ -44,7 +43,7 @@ const store = Luckt.createStore({
       
     }
   }
-})
+});
 
 /*
 	you can follow changes in your store, by giving callbacks 
@@ -52,7 +51,7 @@ const store = Luckt.createStore({
 	will return an unfollow callback which you can run after you 
 	no longer need to follow the changes.
  */                                  
-const unfollow = store.follow(function() { 
+const unfollow = store.follow(function(state) { 
   console.log('state has changed!')
 })
 
