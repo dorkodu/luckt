@@ -1,8 +1,8 @@
-![Luckt Logo](assets/luckt-logo-dark.png)
+<img src="assets/luckt-logo-dark.png" alt="Luckt Logo" style="width: 80%; margin: 0 auto;" />
 
 # Luckt
 
-Luckt is a lightweight and predictable state management pattern + library for JavaScript apps. It serves as a centralized store for all the components in an application, with rules ensuring that the state can only be mutated in a predictable way. 
+Luckt is a lightweight and predictable state management pattern + library for JavaScript apps. It serves as a centralized store for all the data flow and state evolution in an application, with rules ensuring that the state can only be mutated in a predictable way.
 
 You can use Luckt together with [Lucid](https://github.com/dorkodu/lucid), or with any other view library.
 
@@ -14,9 +14,9 @@ Learn more about Luckt and get started by checking out the documentation.
 
 ## Get Started
 
-Luckt is a lightweight library with a single source file. It is tiny (less than 4kB) and simple to use. You even don't need to be using npm! Luckt is a single file, you can easily add the minified version to your code. Download it from the Luckt docs site, or the file named **luckt.min.js** in the GitHub repo.
+Luckt is a lightweight library with a single source file. It is tiny (less than 5kB) and simple to use. You even don't need to be using npm! Luckt is a single file — **luckt.js** (and for production **luckt.min.js**), you can easily add it to your code.
 
-**Luckt documentation** is our official recommended approach for starting to learn Luckt. It wraps around the whole "for Dummies" content, philosophy behind it, installation, deep dive into Luckt's core. By reading the docs, you learn how to use Luckt with our suggested best practices, see the simple logic behind Luckt.
+**Luckt documentation** is our official recommended approach for starting to learn Luckt. It wraps around the whole "for Dummies" content, philosophy behind it, installation, deep dive into Luckt's core. By reading the docs, you learn how to use Luckt with our suggested best practices and see the logic behind Luckt.
 
 ## Documentation
 
@@ -34,9 +34,9 @@ Luckt is a valuable pattern for organizing and managing your state, but you shou
 
 Here are some suggestions on when it makes sense to use Luckt:
 
-- You have reasonable amounts of data changing over time
-- You need a single source of truth for your application state
-- You find that managing all your state manually is no longer sufficient
+- You have reasonable amounts of data changing over time.
+- You need a single source of truth for your application state.
+- You find that managing all your state manually is no longer sufficient.
 
 Yes, these guidelines are subjective and vague, but this is for a good reason. The point at which you should integrate Luckt into your application is different for every user and different for every application.
 
@@ -49,13 +49,9 @@ Yes, these guidelines are subjective and vague, but this is for a good reason. T
 Luckt evolves the ideas of Redux, but avoids complexity by borrowing principles from [the Lucid Approach](https://libre.dorkodu.com/the-lucid-approach/)
 Even if you haven't used any other state manager libraries, Luckt only takes a few minutes to get started with.
 
-## Change Log
-
-This project adheres to [Semantic Versioning](https://semver.org/).<br>Detailed changes along the way are documented in the [change log notes](CHANGELOG.md).
-
 ## License
 
 [MIT](LICENSE)
 
-*Copyright (c) 2020-present Dorkodu*
+Copyright **(c)** 2021 Dorkodu [dorkodu.com](https://dorkodu.com)
 
