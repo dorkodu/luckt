@@ -14,16 +14,15 @@ function store(props) {
   const mutations = props.mutations;
   const actions = props.actions;
 
-  const storeObj = {
-    commit: commit.bind({ state: state, mutations: mutations }),
-    dispatch: dispatch.bind({ commit: commit, actions: actions })
-  };
+  const store = {};
+  store.commit = commit.bind({ state: state, mutations: mutations });
+  store.dispatch = dispatch.bind({ commit: store.commit, actions: actions })
 
-  Object.defineProperty(storeObj, "state", {
+  Object.defineProperty(store, "state", {
     get: () => Object.assign({}, state)
   })
 
-  return storeObj;
+  return store;
 }
 
 function commit(mutation) {
