@@ -1,132 +1,35 @@
-/**
- * Copyright (c) Dorkodu
- * 
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root folder of this source tree.
- */
-
 export const Luckt = {
-  createStore: createStore
+  store: store
 };
 
 /**
- * Returns a store that's created with given properties.
+ * 
+ * @param {object} props 
+ * @param {object} props.state
+ * @param {object} [props.mutations]
+ * @param {object} [props.actions]
  */
-function createStore(properties) {
+function store(props) {
+  const state = props.state;
+  const mutations = props.mutations;
+  const actions = props.actions;
 
-  let _committing = false;
-
-  // assigning the initial state, if given
-  let _state = isObject(properties.state) ?
-    properties.state : {}
-
-  let _watchers = [];
-  let _getters = properties.getters;
-  let _acts = properties.acts;
-
-  function commit(action) {
-
-    // TODO: update the state
-
-    // notice the watchers
-    _watchers
-      .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
-      .forEach(function (watcher) {
-        if (isFunction(watcher))
-          watcher(action, _state);
-      });
-    /**
-     * commiting always returns the action
-     * this is really important for middleware's
-     */
-    return action;
-  }
-
-  function watch(watcher, options) {
-    return genericSubscribe(watcher, _watchers, options)
-  }
-
-  function get(name) {
-    if (typeof name === "string") {
-      const getter = _getters[name];
-      if (isFunction(getter))
-        return getter(_state);
-    }
-  }
-
-  function state() {
-    return _state;
-  }
-
-  function genericSubscribe(fn, subs, options) {
-    if (subs.indexOf(fn) < 0) {
-      options && options.prepend ?
-        subs.unshift(fn) :
-        subs.push(fn)
-    }
-
-    return function () {
-      const i = subs.indexOf(fn)
-      if (i > -1) {
-        subs.splice(i, 1)
-      }
-    }
-  }
-
-  function replaceState(newState) {
-    _withCommit(function () {
-      _state = newState
-    })
-  }
-
-  function _withCommit(fn) {
-    const committing = _committing
-    _committing = true
-    fn()
-    _committing = committing
-  }
-
-  return {
-    commit: commit,
-    watch: watch,
-    state: state,
-    get: get
+  const storeObj = {
+    commit: commit.bind({ state: state, mutations: mutations }),
+    dispatch: dispatch.bind({ commit: commit, actions: actions })
   };
+
+  Object.defineProperty(storeObj, "state", {
+    get: () => Object.assign({}, state)
+  })
+
+  return storeObj;
 }
 
-/*
-  TODOS: 
-  
-  - Will have resetStore in the future, but not necessary for now
-  
-  function resetStore (store, hot) {
-    store._acts = Object.create(null)
-  }
-  - registerGetter
-  - registerAct
-  - registerActWatcher
-
-*/
-
-function premise(condition, explanation) {
-  if (!condition) console.error(`[luckt] ${explanation}`)
+function commit(mutation) {
+  this.mutations[mutation](this.state);
 }
 
-function isPromise(val) {
-  return val && typeof val.then === 'function'
-}
-
-function isObject(obj) {
-  return obj !== null && typeof obj === 'object'
-}
-
-function isFunction(val) {
-  return val !== null && typeof val === 'function'
-}
-
-/**
- * forEach for object type
- */
-function forEachAttribute(obj, fn) {
-  Object.keys(obj).forEach(key => fn(obj[key], key))
+function dispatch(action) {
+  this.actions[action]({ commit: this.commit });
 }
