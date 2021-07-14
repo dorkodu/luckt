@@ -25,8 +25,8 @@ function store(props) {
   return store;
 }
 
-function commit(act) {
-  this.acts[act](this.state);
+function commit(act, ...args) {
+  this.acts[act](this.state, ...args);
 }
 
 function promise(future) {
