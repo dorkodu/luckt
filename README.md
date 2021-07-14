@@ -1,4 +1,4 @@
-<img src="assets/luckt-logo-dark.png" alt="Luckt Logo" style="width: 80%; margin: 0 auto;" />
+<img src="assets/luckt-logo-dark.png" alt="Luckt Logo" style="width: 70%; margin: 0 auto;" />
 
 # Luckt
 
