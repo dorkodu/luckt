@@ -6,8 +6,8 @@ export const Luckt = {
  * @typedef Store
  * @property {any} state
  * @property {commit} commit  
- * @property {promise} promise  
- * @property {Object<string, getter} getters  
+ * @property {cbPromise} promise  
+ * @property {Object<string, any} getters  
  * @property {watch} watch  
  */
 
@@ -41,7 +41,7 @@ export const Luckt = {
  */
 
 /**
- * @callback promise
+ * @callback cbPromise
  * @param {string} future
  * @param {any} payload
  */
@@ -106,7 +106,7 @@ function commit(act, payload) {
       this.localWatches[act][i]({ type: act, payload: payload }, this.state);
 }
 
-/** @type {promise} promise */
+/** @type {cbPromise} promise */
 function promise(future, payload) {
   this.futures[future]({ commit: this.commit }, payload);
 }
