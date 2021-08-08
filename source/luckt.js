@@ -1,138 +1,81 @@
 export const Luckt = {
-  store: store
+  store: Store
 };
 
 /**
- * @typedef Store
- * @property {any} state
- * @property {commit} commit  
- * @property {cbPromise} promise  
- * @property {Object<string, any} getters  
- * @property {watch} watch  
- */
-
-/**
- * @typedef Context
- * @property {commit} commit
- */
-
-/**
- * @typedef ActDescriptor
- * @property {string} name
- * @property {any} payload
- */
-
-/**
- * @callback act
+ * @callback ActFunction
  * @param {any} state
  * @param {any} payload
  */
 
 /**
- * @callback future
- * @param {Context} context
+ * @callback FutureFunction
+ * @param {(act: string, payload: any) => void} commit
  * @param {any} payload
  */
 
 /**
- * @callback commit
- * @param {string} act
- * @param {any} payload
- */
-
-/**
- * @callback cbPromise
- * @param {string} future
- * @param {any} payload
- */
-
-/**
- * @callback getter
+ * @callback GetterFunction
  * @param {any} state
- * @param {Object<string, getter} getters
- */
-
-/**
- * @callback watch
- * @param {(act: ActDescriptor, state: any) => void} handler 
- * @param {{prepend?: boolean, act?: string}} [options] 
- * @returns {unwatch} 
- */
-
-/** 
- * @callback unwatch
+ * @param {Object<string, () => any>} getters
  */
 
 /**
  * 
  * @param {object} props 
- * @param {any} props.state
- * @param {Object<string, act} [props.acts]
- * @param {Object<string, future} [props.futures]
- * @param {Object<string, getter} [props.getters]
- * @returns {Store}
+ * @param {any} props.state Initial state of the store.
+ * @param {Object<string, ActFunction>} props.acts 
+ * @param {Object<string, FutureFunction>} props.futures
+ * @param {Object<string, GetterFunction>} props.getters
  */
-function store(props) {
-  const state = props.state;
+function Store(props) {
+  this.state = props.state;
   const acts = props.acts;
   const futures = props.futures;
-  const getters = props.getters;
-  const localWatches = {};   // Watchs a specific type of act
-  const globalWatches = [];  // Watchs every act
+  this.getters = {};
+  const watches = {};
 
-  const store = {};
-  store.state = state;
-  store.commit = commit.bind({ state: state, acts: acts, localWatches: localWatches, globalWatches: globalWatches });
-  store.promise = promise.bind({ commit: store.commit, futures: futures })
-  store.getters = {};
-  store.watch = watch.bind({ localWatches: localWatches, globalWatches: globalWatches });
+  for (const key in props.getters)
+    Object.defineProperty(this.getters, key, { get: () => props.getters[key](this.state, this.getters) });
 
-  for (const key in getters)
-    Object.defineProperty(store.getters, key, {
-      get: () => getters[key](state, getters)
-    });
+  /**
+   * 
+   * @param {string} act 
+   * @param {any} payload 
+   */
+  this.commit = (act, payload) => {
+    acts[act](this.state, payload);
 
-  return store;
-}
-
-/** @type {commit} commit */
-function commit(act, payload) {
-  this.acts[act](this.state, payload);
-
-  for (let i = 0; i < this.globalWatches.length; ++i)
-    this.globalWatches[i]({ type: act, payload: payload }, this.state);
-  if (this.localWatches[act])
-    for (let i = 0; i < this.localWatches[act].length; ++i)
-      this.localWatches[act][i]({ type: act, payload: payload }, this.state);
-}
-
-/** @type {cbPromise} promise */
-function promise(future, payload) {
-  this.futures[future]({ commit: this.commit }, payload);
-}
-
-
-/** @type {watch} watch */
-function watch(handler, options) {
-  if (options && options.act) {
-    // Initialize local watch with act name if not initialized
-    if (!this.localWatches[options.act]) this.localWatches[options.act] = [];
-
-    if (!options.prepend) this.localWatches[options.act].unshift(handler);
-    else this.localWatches[options.act].push(handler);
-
-    return () => {
-      const index = this.localWatches[options.act].indexOf(handler);
-      if (index !== -1) this.localWatches[options.act].splice(index, 1);
-    };
+    if (watches[act])
+      for (let i = 0; i < watches[act].length; ++i)
+        watches[act][i]();
   }
-  else {
-    if (options && !options.prepend) this.globalWatches.unshift(handler);
-    else this.globalWatches.push(handler);
+
+  /**
+   * 
+   * @param {string} future 
+   * @param {any} payload 
+   */
+  this.promise = (future, payload) => {
+    futures[future](this.commit, payload);
+  }
+
+  /**
+   * 
+   * @param {string} act 
+   * @param {() => void} callback 
+   * @param {boolean} prepend 
+   * @returns 
+   */
+  this.watch = (act, callback, prepend) => {
+    if (!watches[act]) watches[act] = [];
+
+    if (prepend) watches[act].unshift(callback);
+    else watches[act].push(callback);
 
     return () => {
-      const index = this.globalWatches.indexOf(handler);
-      if (index !== -1) this.globalWatches.splice(index, 1);
-    };
+      const index = watches[act].indexOf(callback);
+      if (index !== -1) watches[act].splice(index, 1);
+    }
   }
 }
