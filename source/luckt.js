@@ -1,17 +1,21 @@
-export const Luckt = {
-  store: Store
-};
+/**
+ * @typedef {object} StoreProperties
+ * @property {any} state
+ * @property {Object<string, ActFunction>} acts
+ * @property {Object<string, FutureFunction>} futures
+ * @property {Object<string, GetterFunction>} getters
+ */
 
 /**
  * @callback ActFunction
  * @param {any} state
- * @param {any} payload
+ * @param {...any} args
  */
 
 /**
  * @callback FutureFunction
  * @param {(act: string, payload: any) => void} commit
- * @param {any} payload
+ * @param {...any} args
  */
 
 /**
@@ -20,62 +24,63 @@ export const Luckt = {
  * @param {Object<string, () => any>} getters
  */
 
-/**
- * 
- * @param {object} props 
- * @param {any} props.state Initial state of the store.
- * @param {Object<string, ActFunction>} props.acts 
- * @param {Object<string, FutureFunction>} props.futures
- * @param {Object<string, GetterFunction>} props.getters
- */
-function Store(props) {
-  this.state = props.state;
-  const acts = props.acts;
-  const futures = props.futures;
-  this.getters = {};
-  const watches = {};
-
-  for (const key in props.getters)
-    Object.defineProperty(this.getters, key, { get: () => props.getters[key](this.state, this.getters) });
-
+export class Luckt {
   /**
    * 
-   * @param {string} act 
-   * @param {any} payload 
+   * @param {StoreProperties} props 
    */
-  this.commit = (act, payload) => {
-    acts[act](this.state, payload);
+  constructor(props) {
+    this.state = props.state;
+    this.getters = {};
 
-    if (watches[act])
-      for (let i = 0; i < watches[act].length; ++i)
-        watches[act][i]();
-  }
+    const acts = props.acts;
+    const futures = props.futures;
 
-  /**
-   * 
-   * @param {string} future 
-   * @param {any} payload 
-   */
-  this.promise = (future, payload) => {
-    futures[future](this.commit, payload);
-  }
+    const watchers = {};
 
-  /**
-   * 
-   * @param {string} act 
-   * @param {() => void} callback 
-   * @param {boolean} prepend 
-   * @returns 
-   */
-  this.watch = (act, callback, prepend) => {
-    if (!watches[act]) watches[act] = [];
+    for (const key in props.getters)
+      Object.defineProperty(this.getters, key, { get: () => props.getters[key](this.state, this.getters) });
 
-    if (prepend) watches[act].unshift(callback);
-    else watches[act].push(callback);
+    /**
+     * 
+     * @param {string} act 
+     * @param  {...any} args 
+     */
+    this.commit = function (act, ...args) {
+      acts[act](this.state, ...args);
 
-    return () => {
-      const index = watches[act].indexOf(callback);
-      if (index !== -1) watches[act].splice(index, 1);
+      // Dispatch the watchers
+      if (watchers[act])
+        for (let i = 0; i < watchers[act].length; ++i)
+          watchers[act][i]();
+    }
+
+    /**
+     * 
+     * @param {string} future 
+     * @param  {...any} args 
+     */
+    this.promise = function (future, ...args) {
+      futures[future](this.commit, ...args);
+    }
+
+    /**
+     * 
+     * @param {string} act 
+     * @param {() => void} callback 
+     * @param {boolean} prepend 
+     * @returns 
+     */
+    this.watch = (act, callback, prepend) => {
+      if (!watches[act]) watches[act] = [];
+
+      if (prepend) watches[act].unshift(callback);
+      else watches[act].push(callback);
+
+      return () => {
+        const index = watches[act].indexOf(callback);
+        if (index !== -1) watches[act].splice(index, 1);
+      }
     }
   }
 }
