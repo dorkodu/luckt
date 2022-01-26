@@ -4,7 +4,7 @@
 
 # Luckt
 
-Luckt is a lightweight and predictable state management pattern + library for JavaScript apps. It serves as a centralized store for all the data flow and state evolution in an application, with rules ensuring that the state can only be mutated in a predictable way.
+Luckt is a lightweight and predictable state management pattern + library for web apps. It serves as a centralized store for all the data flow and state evolution in an application, with rules ensuring that the state can only be mutated in a predictable way.
 
 You can use Luckt together with [Lucid](https://github.com/dorkodu/lucid), or with any other view library.
 

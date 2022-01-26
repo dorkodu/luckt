@@ -1,0 +1,35 @@
+{
+  "name": "@dorkodu/luckt",
+  "version": "0.0.1",
+  "description": "Luckt is a lightweight and predictable state management pattern + library for web apps.",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "npx rimraf ./lib/**/*",
+    "compile": "npx rollup --c",
+    "build": "run-s clean compile",
+    "dev": "npx rollup --c --w",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dorkodu/luckt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dorkodu/luckt/issues"
+  },
+  "homepage": "https://github.com/dorkodu/luckt#readme",
+  "author": "Berk Cambaz",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.10",
+    "@babel/preset-typescript": "^7.16.7",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "preact": "^10.6.4",
+    "prettier": "^2.5.1",
+    "rollup": "^2.64.0",
+    "typescript": "^4.5.4"
+  }
+}
