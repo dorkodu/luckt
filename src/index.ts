@@ -4,139 +4,79 @@ interface StoreOptions {
   futures?: { [key: string]: any }
 }
 
+interface Listener {
+  listeners: { [key: string]: (() => void)[] },
+  queue: (() => void)[],
+  busy: boolean
+}
+
 class Luckt {
   store(options: StoreOptions) {
-    function listener() {
-      return { listener: [], queue: [], busy: false }
+    function listener(): Listener {
+      return {
+        listeners: {},
+        queue: [],
+        busy: false
+      }
     }
 
     let _lookAct = listener();
     let _lookPromise = listener();
-    let _watchAct = listener();
-    let _watchPromise = listener();
 
     function act(action: string, payload?: any) {
+      const parsed = action.split(".");
+      const target = parsed[0];
+      const event = parsed[1];
+      const result = (options as any).actions[target][event]((options as any).actions[target].__(options.state), payload);
+
+      if (!result) return;
+
+      _lookAct.busy = true;
+      for (let i = 0; i < _lookAct.listeners[target].length; ++i) {
+        if (_lookAct.listeners[target]) _lookAct.listeners[target][i]();
+      }
+      _lookAct.listeners[target] = [];
+      _lookAct.busy = false;
+      for (let i = 0; i < _lookAct.queue.length; ++i) {
+        if (_lookAct.queue[i]) _lookAct.queue[i]()
+      }
+      _lookAct.queue = [];
+    }
+
+    function promise(future: string, payload?: any) {
 
     }
 
-    function watch(promise: string, payload?: any) {
+    function lookAct(target: string, cb: () => any) {
 
-    }
+      let state = (options as any).actions[target].__(options.state);
+      let unlook;
 
-    function lookAct(action: string, cb: () => any) {
+      if (_lookAct.busy) {
+        _lookAct.queue.push(cb);
+        unlook = () => { _lookAct.listeners[target].splice(_lookAct.listeners[target].indexOf(cb), 1) }
+        return [state, unlook];
+      };
 
+      if (!_lookAct.listeners[target]) _lookAct.listeners[target] = [];
+      _lookAct.listeners[target].push(cb);
+      unlook = () => { _lookAct.listeners[target].splice(_lookAct.listeners[target].indexOf(cb), 1) }
+
+      return [state, unlook];
     }
 
     function lookPromise(future: string, cb: () => any) {
 
     }
 
-    function watchAct(action: string, cb: () => any) {
-
-    }
-
-    function watchPromise(future: string, cb: () => any) {
-
-    }
-
     return {
       state: options.state,
       act,
-      watch,
+      promise,
       lookAct,
-      lookPromise,
-      watchAct,
-      watchPromise
+      lookPromise
     }
   }
 }
 
 export const luckt = new Luckt();
-
-/*
-
-
-function luckt(options) {
-  let listeners = {};
-  let busy = false;
-  let queue = [];
-
-  function act(action, payload) {
-    busy = true;
-
-    action = action.split("/");
-    const target = action[0];
-    const event = action[1];
-
-    options.actions[target][event](options.state);
-    for (let i = 0; i < listeners[target].length; ++i) {
-      if (listeners[target][i]) listeners[target][i]();
-    }
-    listeners[target] = []
-
-    busy = false;
-
-    for (let i = 0; i < queue.length; ++i) {
-      if (queue[i]) queue[i]();
-    }
-    queue = [];
-  }
-
-  function promise(future, payload) {
-
-  }
-
-  function lookAct(target, cb) {
-    let state = options.actions[target].__(options.state);
-    let unlook;
-    let id;
-
-    if (busy) {
-      id = queue.push(() => { lookAct(target, cb) });
-      unlook = () => { queue[id - 1] = undefined; }
-      return [state, unlook];
-    };
-
-    if (!listeners[target]) listeners[target] = [];
-    id = listeners[target].push(cb)
-    unlook = () => { listeners[target][id - 1] = undefined; }
-
-    return [state, unlook];
-  }
-
-  function lookPromise(target, cb) {
-    console.log("Looking!");
-  }
-
-  function watchAct(target, cb) {
-    console.log("Watching!");
-  }
-
-  function watchPromise(target, cb) {
-    console.log("Watching!");
-  }
-
-  return {
-    state: options.state,
-    act,
-    promise,
-    lookAct,
-    lookPromise,
-    watchAct,
-    watchPromise,
-  };
-}
-
-const store = luckt({
-  state: { count: 1 },
-  actions: {
-    counter: {
-      __: (state) => state,
-      increase: (state) => { state.count++ },
-      decrease: (state) => { state.count-- },
-      reset: (state) => { state.count = 0 },
-    }
-  }
-});
-
-*/
