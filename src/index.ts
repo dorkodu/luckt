@@ -25,11 +25,11 @@ class Luckt {
     let _lookAct = {} as any;
     let _lookPromise = {} as any;
 
-    function act(action: string, payload?: any) {
+    function act(action: string, ...payload: any[]) {
       const parsed = action.split(".");
       const target = parsed[0];
       const event = parsed[1];
-      const result = (options as any).actions[target][event]((options as any).actions[target].__(options.state), payload);
+      const result = (options as any).actions[target][event]((options as any).actions[target].__(options.state), ...payload);
 
       if (!result) return;
 
