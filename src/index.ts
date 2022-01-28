@@ -5,23 +5,25 @@ interface StoreOptions {
 }
 
 interface Listener {
-  listeners: { [key: string]: (() => void)[] },
-  queue: (() => void)[],
-  busy: boolean
+  listeners: { id: number, cb: (() => void) }[],
+  queue: { id: number, cb: (() => void) }[],
+  busy: boolean,
+  id: number
 }
 
 class Luckt {
   store(options: StoreOptions) {
     function listener(): Listener {
       return {
-        listeners: {},
+        listeners: [],
         queue: [],
-        busy: false
+        busy: false,
+        id: 0
       }
     }
 
-    let _lookAct = listener();
-    let _lookPromise = listener();
+    let _lookAct = {} as any;
+    let _lookPromise = {} as any;
 
     function act(action: string, payload?: any) {
       const parsed = action.split(".");
@@ -31,16 +33,21 @@ class Luckt {
 
       if (!result) return;
 
-      _lookAct.busy = true;
-      for (let i = 0; i < _lookAct.listeners[target].length; ++i) {
-        if (_lookAct.listeners[target]) _lookAct.listeners[target][i]();
+      _lookAct[target].busy = true;
+      for (let i = 0; i < _lookAct[target].listeners.length; ++i) {
+        if (_lookAct[target].listeners[i]) _lookAct[target].listeners[i].cb();
       }
-      _lookAct.listeners[target] = [];
-      _lookAct.busy = false;
-      for (let i = 0; i < _lookAct.queue.length; ++i) {
-        if (_lookAct.queue[i]) _lookAct.queue[i]()
+      _lookAct[target].listeners = [];
+      _lookAct[target].busy = false;
+      for (let i = 0; i < _lookAct[target].queue.length; ++i) {
+        if (_lookAct[target].queue[i]) {
+          _lookAct[target].listeners.push({
+            id: _lookAct[target].queue[i].id,
+            cb: _lookAct[target].queue[i].cb
+          });
+        };
       }
-      _lookAct.queue = [];
+      _lookAct[target].queue = [];
     }
 
     function promise(future: string, payload?: any) {
@@ -48,19 +55,25 @@ class Luckt {
     }
 
     function lookAct(target: string, cb: () => any) {
+      if (!_lookAct[target]) _lookAct[target] = listener();
 
+      const id = _lookAct[target].id++;
       let state = (options as any).actions[target].__(options.state);
-      let unlook;
+      let unlook = () => {
+        if (_lookAct.busy) {
 
-      if (_lookAct.busy) {
-        _lookAct.queue.push(cb);
-        unlook = () => { _lookAct.listeners[target].splice(_lookAct.listeners[target].indexOf(cb), 1) }
-        return [state, unlook];
+        }
+        else {
+
+        }
       };
 
-      if (!_lookAct.listeners[target]) _lookAct.listeners[target] = [];
-      _lookAct.listeners[target].push(cb);
-      unlook = () => { _lookAct.listeners[target].splice(_lookAct.listeners[target].indexOf(cb), 1) }
+      if (_lookAct[target].busy) {
+        _lookAct[target].queue.push({ id, cb });
+      }
+      else {
+        _lookAct[target].listeners.push({ id, cb });
+      }
 
       return [state, unlook];
     }
