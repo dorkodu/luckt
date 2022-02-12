@@ -1,4 +1,4 @@
-<p text-align="center">
+<p align="center">
   <img src="res/luckt-logo-dark.png" alt="Luckt Logo" style="width: 70%; margin: 5px auto;" />
 </p>
 
