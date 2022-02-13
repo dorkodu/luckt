@@ -3,13 +3,15 @@ function store<T1, T2>(state: T1, logic: T2) {
   let id = 0;
 
   for (const key in logic) {
-    const cb: () => boolean = (logic[key] as any);
-    (logic[key] as any) = () => {
-      if (cb()) dispatch(key);
+    const cb: (...payload: any) => boolean = (logic[key] as any);
+    (logic[key] as any) = (...payload: any[]) => {
+      if (cb(...payload)) dispatch(key);
     }
   }
 
   function dispatch(key: string) {
+    if (!watchers[key]) return;
+
     for (let i = 0; i < watchers[key].length; ++i) {
       watchers[key][i].cb();
     }
